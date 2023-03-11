@@ -10,12 +10,22 @@ const authRoute = require("./routes/AuthRoute");
 const topicRoute = require("./routes/TopicRoute");
 const categoryRoute = require("./routes/CategoryRoute");
 const userRoute = require("./routes/UserRoute");
+const cloudinary = require("cloudinary");
 const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
+const postRoute = require("./routes/PostRoute");
 
 const app = express();
 
 //config env
 dotenv.config({ path: "./config/variable.env" });
+
+//config cloudnary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
 
 //use body json request
 app.use(express.json({ limit: "10MB" }));
@@ -27,6 +37,7 @@ app.use(
     extended: true,
   })
 );
+app.use(fileUpload());
 
 app.set("trust proxy", 1);
 
@@ -82,6 +93,7 @@ app.use("/auth", authRoute);
 app.use("/topic", topicRoute);
 app.use("/category", categoryRoute);
 app.use("/user", userRoute);
+app.use("/post", postRoute);
 
 //error middleware
 app.use(errorMiddleware);
