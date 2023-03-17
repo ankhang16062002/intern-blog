@@ -11,9 +11,11 @@ const topicRoute = require("./routes/TopicRoute");
 const categoryRoute = require("./routes/CategoryRoute");
 const userRoute = require("./routes/UserRoute");
 const cloudinary = require("cloudinary");
+const commentRoute = require("./routes/CommentRoute");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const postRoute = require("./routes/PostRoute");
+const notifycationRoute = require("./routes/NotifycationRoute");
 
 const app = express();
 
@@ -94,6 +96,8 @@ app.use("/topic", topicRoute);
 app.use("/category", categoryRoute);
 app.use("/user", userRoute);
 app.use("/post", postRoute);
+app.use("/comment", commentRoute);
+app.use("/notifycation", notifycationRoute);
 
 //error middleware
 app.use(errorMiddleware);
