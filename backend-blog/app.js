@@ -17,7 +17,17 @@ const fileUpload = require("express-fileupload");
 const postRoute = require("./routes/PostRoute");
 const notifycationRoute = require("./routes/NotifycationRoute");
 
+const {
+  addUser,
+  removeUser,
+  findUserOnline,
+} = require("./utils/supportSocket-io");
+
 const app = express();
+
+//import socket
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 //config env
 dotenv.config({ path: "./config/variable.env" });
@@ -102,4 +112,54 @@ app.use("/notifycation", notifycationRoute);
 //error middleware
 app.use(errorMiddleware);
 
-module.exports = app;
+// create httpServer for socket
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:8000",
+  },
+});
+
+let onlineUsers = [];
+
+io.on("connection", (socket) => {
+  console.log("someone has connected");
+
+  socket.on("newUser", (user) => {
+    addUser(user, socket.id, onlineUsers);
+  });
+
+  socket.on(
+    "sendNotifycation",
+    ({
+      userSender,
+      userRecevied,
+      type,
+      postSlug,
+      commentId,
+      replyId,
+      notifycationId,
+    }) => {
+      const user = findUserOnline(userRecevied, onlineUsers);
+
+      if (user) {
+        io.to(user.socketId).emit("getNotifycation", {
+          userSender,
+          userRecevied,
+          type,
+          postSlug,
+          commentId,
+          replyId,
+          notifycationId,
+          createdAt: Date.now(),
+        });
+      }
+    }
+  );
+
+  socket.on("disconnect", () => {
+    removeUser(socket.id, onlineUsers);
+  });
+});
+
+module.exports = httpServer;

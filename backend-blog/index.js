@@ -1,4 +1,4 @@
-const app = require("./app"); //add change
+const httpServer = require("./app");
 const connectDatabase = require("./config/connectDatabase");
 const process = require("process");
 
@@ -20,7 +20,6 @@ process.on("unhandledRejection", (error) => {
 // connect to database
 connectDatabase();
 
-app.listen(process.env.PORT || 8800, () => {
-  //add change
+httpServer.listen(process.env.PORT || 8800, () => {
   console.log(`backend is running port ${process.env.PORT}`);
 });
