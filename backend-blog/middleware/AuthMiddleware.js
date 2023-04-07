@@ -4,7 +4,6 @@ const errorMessage = require("../utils/error-message");
 
 exports.checkAuthenicated = catchAsyncError(async (req, res, next) => {
   const dataPassport = req.session.passport;
-  console.log(dataPassport);
   if (dataPassport) {
     const idSocial = dataPassport.user.idSocial;
     const user = await UserModel.findOne({ idSocial });
